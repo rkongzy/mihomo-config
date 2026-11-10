@@ -72,6 +72,11 @@ proxy-providers:
       dialer-proxy: 代理
 
 proxy-groups:
+  # 总选择：国外流量默认走这里，可以在机场节点和落地节点之间切换
+  - name: 节点选择
+    type: select
+    proxies: [代理, 落地]
+
   - name: 代理
     type: select
     proxies: [香港, 日本, 韩国, 新加坡, 美国, 其他]
@@ -116,4 +121,4 @@ rules:
   - GEOIP,private,DIRECT,no-resolve
   - GEOSITE,cn,DIRECT
   - GEOIP,CN,DIRECT
-  - MATCH,代理
+  - MATCH,节点选择
