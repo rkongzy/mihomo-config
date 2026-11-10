@@ -62,40 +62,52 @@ proxy-providers:
       enable: true
       url: https://www.gstatic.com/generate_204
       interval: 600
+  落地:
+    type: http
+    url: "这里填你的落地节点订阅链接"
+    path: ./providers/landing.yaml
+    interval: 86400
+    # 落地节点统一以「代理」组作为前置
+    override:
+      dialer-proxy: 代理
 
 proxy-groups:
   - name: 代理
     type: select
     proxies: [香港, 日本, 韩国, 新加坡, 美国, 其他]
 
+  - name: 落地
+    type: select
+    use: [落地]
+
   - name: Bybit
     type: select
-    proxies: [代理, 香港, 日本, 韩国, 新加坡, 美国, 其他]
+    proxies: [落地, 代理, 香港, 日本, 韩国, 新加坡, 美国, 其他]
 
   # 地区分组：从订阅里按节点名筛选，自动选延迟最低的
   - name: 香港
     type: url-test
-    include-all: true
+    use: [机场]
     filter: '(?i)港|\bhk|hong ?kong|🇭🇰'
   - name: 日本
     type: url-test
-    include-all: true
+    use: [机场]
     filter: '(?i)日本|东京|大阪|\bjp|japan|🇯🇵'
   - name: 韩国
     type: url-test
-    include-all: true
+    use: [机场]
     filter: '(?i)韩|首尔|\bkr|korea|🇰🇷'
   - name: 新加坡
     type: url-test
-    include-all: true
+    use: [机场]
     filter: '(?i)新加坡|狮城|\bsg|singapore|🇸🇬'
   - name: 美国
     type: url-test
-    include-all: true
+    use: [机场]
     filter: '(?i)美国|洛杉矶|圣何塞|\bus|united ?states|america|🇺🇸'
   - name: 其他
     type: select
-    include-all: true
+    use: [机场]
     exclude-filter: '(?i)港|\bhk|hong ?kong|🇭🇰|日本|东京|大阪|\bjp|japan|🇯🇵|韩|首尔|\bkr|korea|🇰🇷|新加坡|狮城|\bsg|singapore|🇸🇬|美国|洛杉矶|圣何塞|\bus|united ?states|america|🇺🇸|剩余|到期|流量|官网'
 
 rules:
