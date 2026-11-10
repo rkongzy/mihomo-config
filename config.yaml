@@ -1,0 +1,107 @@
+# mihomo 最简配置：系统 DNS + TUN，内网和国内直连，其余走代理
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: warning
+ipv6: true
+
+# GEO 数据用 dat 格式，每天自动更新，从 jsdelivr 镜像下载官方 meta-rules-dat
+geodata-mode: true
+geo-auto-update: true
+geo-update-interval: 24
+geox-url:
+  geoip: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
+  geosite: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+  mmdb: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb"
+
+tun:
+  enable: true
+  stack: mixed
+  auto-route: true
+  auto-detect-interface: true
+  dns-hijack:
+    - any:53
+    - tcp://any:53
+
+dns:
+  enable: true
+  ipv6: true
+  enhanced-mode: redir-host
+  # 默认用系统 DNS
+  nameserver:
+    - system
+  # 国外域名走国外 DNS，经「代理」组查询，防污染也不泄露
+  nameserver-policy:
+    'geosite:geolocation-!cn':
+      - 'https://1.1.1.1/dns-query#代理'
+      - 'https://8.8.8.8/dns-query#代理'
+  # 解析节点域名用系统 DNS，避免先有鸡还是先有蛋的问题
+  proxy-server-nameserver:
+    - system
+
+# redir-host 下 DNS 没经过 mihomo 时（浏览器自带 DoH、发往局域网的 DNS 等），靠嗅探拿回域名
+sniffer:
+  enable: true
+  parse-pure-ip: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+
+proxy-providers:
+  机场:
+    type: http
+    url: "这里填你的 Clash/mihomo 订阅链接"
+    path: ./providers/airport.yaml
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 600
+
+proxy-groups:
+  - name: 代理
+    type: select
+    proxies: [香港, 日本, 韩国, 新加坡, 美国, 其他]
+
+  - name: Bybit
+    type: select
+    proxies: [代理, 香港, 日本, 韩国, 新加坡, 美国, 其他]
+
+  # 地区分组：从订阅里按节点名筛选，自动选延迟最低的
+  - name: 香港
+    type: url-test
+    include-all: true
+    filter: '(?i)港|\bhk|hong ?kong|🇭🇰'
+  - name: 日本
+    type: url-test
+    include-all: true
+    filter: '(?i)日本|东京|大阪|\bjp|japan|🇯🇵'
+  - name: 韩国
+    type: url-test
+    include-all: true
+    filter: '(?i)韩|首尔|\bkr|korea|🇰🇷'
+  - name: 新加坡
+    type: url-test
+    include-all: true
+    filter: '(?i)新加坡|狮城|\bsg|singapore|🇸🇬'
+  - name: 美国
+    type: url-test
+    include-all: true
+    filter: '(?i)美国|洛杉矶|圣何塞|\bus|united ?states|america|🇺🇸'
+  - name: 其他
+    type: select
+    include-all: true
+    exclude-filter: '(?i)港|\bhk|hong ?kong|🇭🇰|日本|东京|大阪|\bjp|japan|🇯🇵|韩|首尔|\bkr|korea|🇰🇷|新加坡|狮城|\bsg|singapore|🇸🇬|美国|洛杉矶|圣何塞|\bus|united ?states|america|🇺🇸|剩余|到期|流量|官网'
+
+rules:
+  - GEOSITE,bybit,Bybit
+  - GEOSITE,private,DIRECT
+  - GEOIP,private,DIRECT,no-resolve
+  - GEOSITE,cn,DIRECT
+  - GEOIP,CN,DIRECT
+  - MATCH,代理
