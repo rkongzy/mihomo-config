@@ -97,6 +97,11 @@ proxy-groups:
     type: select
     use: [落地]
 
+  # 家里局域网：在家选直连，在外面选 Tailscale（需要 tailnet 里有设备发布 192.168.50.0/24 子网路由）
+  - name: 本地网络
+    type: select
+    proxies: [DIRECT, Tailscale]
+
   - name: Bybit
     type: select
     proxies: [落地, 代理, 香港, 日本, 韩国, 新加坡, 美国, 其他]
@@ -132,6 +137,7 @@ rules:
   - DOMAIN-SUFFIX,ts.net,Tailscale
   - IP-CIDR,100.64.0.0/10,Tailscale,no-resolve
   - IP-CIDR6,fd7a:115c:a1e0::/48,Tailscale,no-resolve
+  - IP-CIDR,192.168.50.0/24,本地网络,no-resolve
   - GEOSITE,bybit,Bybit
   - GEOSITE,private,DIRECT
   - GEOIP,private,DIRECT,no-resolve
