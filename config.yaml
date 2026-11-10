@@ -32,9 +32,6 @@ dns:
     - system
   # 国外域名走国外 DNS，经「代理」组查询，防污染也不泄露
   nameserver-policy:
-    # tailnet 里的设备名（MagicDNS）交给 Tailscale 解析
-    '+.ts.net':
-      - 'ts://Tailscale'
     'geosite:geolocation-!cn':
       - 'https://1.1.1.1/dns-query#代理'
       - 'https://8.8.8.8/dns-query#代理'
@@ -133,10 +130,7 @@ proxy-groups:
     exclude-filter: '(?i)港|\bhk|hong ?kong|🇭🇰|日本|东京|大阪|\bjp|japan|🇯🇵|韩|首尔|\bkr|korea|🇰🇷|新加坡|狮城|\bsg|singapore|🇸🇬|美国|洛杉矶|圣何塞|\bus|united ?states|america|🇺🇸|剩余|到期|流量|官网'
 
 rules:
-  # tailnet 的域名和地址走 Tailscale，要放在内网直连规则前面
-  - DOMAIN-SUFFIX,ts.net,Tailscale
-  - IP-CIDR,100.64.0.0/10,Tailscale,no-resolve
-  - IP-CIDR6,fd7a:115c:a1e0::/48,Tailscale,no-resolve
+  # 家里局域网，要放在内网直连规则前面
   - IP-CIDR,192.168.50.0/24,本地网络,no-resolve
   - GEOSITE,bybit,Bybit
   - GEOSITE,private,DIRECT

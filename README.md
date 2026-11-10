@@ -19,6 +19,6 @@ https://raw.githubusercontent.com/rkongzy/mihomo-config/refs/heads/main/substore
 
 ## Tailscale
 
-配置里有一个 `Tailscale` 节点，mihomo 会自己作为设备 `mihomo` 加入 tailnet。没有写 auth-key：第一次访问 tailnet 地址时，到 mihomo 日志里找登录链接，在浏览器打开登录即可，登录状态保存在 `./tailscale` 目录。第一次访问超时属于正常现象，多试几次。
+配置里有一个 `Tailscale` 节点，mihomo 会自己作为设备 `mihomo` 加入 tailnet。没有写 auth-key：第一次在「本地网络」选 Tailscale 并访问 192.168.50.x 时，到 mihomo 日志里找登录链接，在浏览器打开登录即可，登录状态保存在 `./tailscale` 目录。第一次访问超时属于正常现象，多试几次。
 
-`*.ts.net` 域名、`100.64.0.0/10` 和 `fd7a:115c:a1e0::/48` 走 Tailscale，其他流量不受影响。
+Tailscale 只用于「本地网络」策略组：`192.168.50.0/24` 走这个组，在家选直连，在外面选 Tailscale（需要 tailnet 里有设备发布 192.168.50.0/24 子网路由并已批准）。
