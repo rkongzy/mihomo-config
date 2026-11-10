@@ -55,7 +55,7 @@ sniffer:
 proxy-providers:
   机场:
     type: http
-    url: "这里填你的 Clash/mihomo 订阅链接"
+    url: "{{机场订阅链接}}"
     path: ./providers/airport.yaml
     interval: 86400
     health-check:
@@ -64,7 +64,7 @@ proxy-providers:
       interval: 600
   落地:
     type: http
-    url: "这里填你的落地节点订阅链接"
+    url: "{{落地订阅链接}}"
     path: ./providers/landing.yaml
     interval: 86400
     # 落地节点统一以「代理」组作为前置
